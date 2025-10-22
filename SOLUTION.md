@@ -7,3 +7,16 @@ Cardiomegaly happens when patient's heart is enlarged. Generally it is a symptom
 
 That is exactly what we are given, a csv file containing data from X-ray.
 
+Although first we need to cast strings to floats and normalize all the values.
+ 
+Then we split data into 4 data sets. 2 for representing neighbors and 2 for testing using sklearn train_test_split function.
+
+### KNN algorithm
+We initialize knn class with training dataset. Then for each patient chosen for testing we perform KNN algorithm. Basically we calculate distances between given patient and training patients using one of the given ways: euclidean, manhattan, hamming distances between vectors. Then we take k closest patients and decide if given patient is sick or not.
+
+### Confusion Matrix
+For each prediction made by out model we compare it to the actual reality and calculate four usefull statistics describing our models: accuracy, precision, recall, f1-score.
+
+### Observations
+Supraisingly using hamming distance to find k-closest patients is the most accurate and precise. Hamming distance counts how many arguments are different so it seems the most unprecise out of the three distances. It might be because of the size of a dataset.
+

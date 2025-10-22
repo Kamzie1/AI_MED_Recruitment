@@ -19,18 +19,26 @@ class ConfusionMatrix:
 
     @property
     def accuracy(self) -> float:
+        if self.TP + self.TN + self.FP + self.FN == 0:
+            return 0
         return (self.TP + self.TN) / (self.TP + self.TN + self.FP + self.FN)
 
     @property
     def precision(self) -> float:
+        if self.TP + self.FP == 0:
+            return 0
         return self.TP / (self.TP + self.FP)
 
     @property
     def recall(self) -> float:
+        if self.TP + self.FN == 0:
+            return 0
         return self.TP / (self.TP + self.FN)
 
     @property
     def F1_score(self) -> float:
+        if self.precision + self.recall == 0:
+            return 0
         return 2 * (self.precision * self.recall) / (self.precision + self.recall)
 
     def print_all(self) -> None:

@@ -7,7 +7,7 @@ def test_manhattan():
     A = [2, 4, 4, 6]
     B = [5, 5, 7, 8]
 
-    assert KNN.manhattan(A, B), 9
+    assert KNN.manhattan(np.array(A), np.array(B)), 9
 
 
 def test_eucalidan():
@@ -15,7 +15,7 @@ def test_eucalidan():
     A = [25, 12, 15, 14, 19, 23, 25, 29]
     B = [5, 7, 7, 9, 12, 9, 9, 4]
     assert (
-        abs(KNN.eucalidan(np.array(A), np.array(B)) - 40.496913462633174) < 0.0000000001
+        abs(KNN.euclidean(np.array(A), np.array(B)) - 40.496913462633174) < 0.0000000001
     )
 
 
@@ -24,7 +24,7 @@ def test_hamming():
     A = [2, 4, 7, 6]
     B = [5, 5, 7, 8]
 
-    assert KNN.hamming(A, B), 3
+    assert KNN.hamming(np.array(A), np.array(B)), 3
 
 
 def test_predict():
@@ -50,7 +50,7 @@ def test_predict():
 
     new_point = [3, 3, 2]
 
-    assert round(knn.predict(new_point)) == 0
+    assert round(knn.predict(np.array(new_point))) == 0
 
 
 def run_tests():
