@@ -41,7 +41,7 @@ class ConfusionMatrix:
             return 0
         return 2 * (self.precision * self.recall) / (self.precision + self.recall)
 
-    def print_all(self) -> None:
+    def print_all(self, tekst: str = "") -> None:
         print(
-            f"Accuracy: {self.accuracy} Precision: {self.precision} Recall: {self.recall} F1-score: {self.F1_score}"
+            f"{tekst} Accuracy: {self.accuracy} Precision: {self.precision} Recall: {self.recall} F1-score: {self.F1_score}"
         )
