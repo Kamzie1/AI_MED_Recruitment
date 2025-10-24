@@ -9,5 +9,5 @@ Cardiomegaly happens when patient's heart is enlarged. Generally it is a symptom
 Using cross-validation we initialize knn class with training dataset. Then for each patient chosen for testing we perform KNN algorithm. Basically we calculate distances between given patient and training patients using one of the given methods: euclidean, manhattan, hamming. Then we take k closest patients and decide whether given patient is sick or not.
 
 ### Confusion Matrix
-We compare three methods of calculating distances (hamming, manhattan, euclidean)
+We compare three methods of calculating distances (hamming, manhattan, euclidean) and visualize them using matplotlib.
 
