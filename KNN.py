@@ -20,7 +20,7 @@ class KNN:
         """
         calculates eucalidean distance between vectors a and b.
         """
-        return np.sum((a - b) ** 2)
+        return pow(np.sum((a - b) ** 2), 0.5)
 
     @staticmethod
     def hamming(a: npt.NDArray, b: npt.NDArray) -> float:
@@ -33,10 +33,25 @@ class KNN:
                 diff += 1
         return diff
 
+    @staticmethod
+    def minkowski(a: npt.NDArray, b: npt.NDArray, p: float) -> float:
+        """
+        calculate minkowski distance between vectors a and b
+        """
+        return pow(np.sum(abs(a - b) ** p), 1 / p)
+
+    @staticmethod
+    def chebyshev(a: npt.NDArray, b: npt.NDArray) -> float:
+        """
+        calculate chebyshev distance between vectors a and b
+        """
+        return max(abs(a - b))
+
     def predict(
         self,
         new_point: npt.NDArray,
         calc_dist: Callable[[npt.NDArray, npt.NDArray], float] = euclidean,
+        p=None,
     ) -> float:
         """
         calculates distance between all the points from x_train and based on k-closest predicts wheter new_point is sick or not.
