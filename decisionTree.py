@@ -28,7 +28,7 @@ class DecisionTreeClassifier:
         self.min_sample = 1
 
     def fit(self, data):
-        self.root = self.craftTree(data, information_gained=1)
+        self.root = self.craftTree(data)
 
     def is_leaf(self, Y):
         i = Y[0]
@@ -37,46 +37,48 @@ class DecisionTreeClassifier:
                 return False
         return True
 
-    def craftTree(self, data, information_gained, depth=0):
+    def craftTree(self, data, depth=0):
         Y = [point[0] for point in data]
-
         if depth > self.max_depth or self.min_sample > len(data) or self.is_leaf(Y):
-            if len(Y) == 0:
+            if len(data) == 0:
                 return None
             return Node(value=self.most_common_label(Y))
 
-        best_value = self.get_best_value(data, information_gained)
-        left = self.craftTree(
-            best_value["left_data"], best_value["info_gain"], depth + 1
-        )
-        right = self.craftTree(
-            best_value["right_data"], best_value["info_gain"], depth + 1
-        )
+        best_value = self.get_best_value(data)
+        left = self.craftTree(best_value["left_data"], depth + 1)
+        right = self.craftTree(best_value["right_data"], depth + 1)
 
         return Node(
             left,
             right,
             best_value["treshold"],
             best_value["feature"],
-            best_value["info_gain"],
         )
 
     def most_common_label(self, Y):
         return round(sum(Y) / len(Y))
 
-    def get_best_value(self, data, information_gained) -> dict:
+    def get_best_value(self, data) -> dict:
         samples, features = data.shape
         max_score = 0
-        max_treshold = []
-        for sample in range(samples):
-            for feature in range(features - 1):
-                treshold = data[sample][feature + 1]
+        max_treshold = (0, 1)
+        sick = 0
+        healthy = 0
+        for patient in data:
+            if patient[0] == 0:
+                healthy += 1
+            else:
+                sick += 1
+        Gini_before_split = self.Gini_Impurity(sick, healthy)
+        for feature in range(1, features):
+            for sample in range(samples):
+                treshold = data[sample][feature]
                 left0 = 0
                 left1 = 0
                 right0 = 0
                 right1 = 0
                 for patient in data:
-                    if patient[feature + 1] <= treshold:
+                    if patient[feature] <= treshold:
                         if patient[0] == 0:
                             left0 += 1
                         else:
@@ -89,41 +91,36 @@ class DecisionTreeClassifier:
                 if left1 + left0 == 0 or right1 + right0 == 0:
                     continue
                 score = self.info_gain(
-                    information_gained,
+                    Gini_before_split,
                     self.Gini_Impurity(left0, left1),
                     self.Gini_Impurity(right0, right1),
                 )
-                if score > max_score:
+                if score >= max_score:
                     max_score = score
-                    max_treshold = [sample, feature]
+                    max_treshold = (sample, feature)
 
         sample, feature = max_treshold
-        treshold = data[sample][feature + 1]
-        right_data = np.array([])
-        left_data = np.array([])
+        treshold = data[sample][feature]
+        right_data = []
+        left_data = []
         for patient in data:
-            if patient[feature + 1] <= treshold:
-                np.append(left_data, patient, axis=0)
+            if patient[feature] <= treshold:
+                left_data.append(patient)
             else:
-                np.append(right_data, patient, axis=0)
+                right_data.append(patient)
 
         return {
             "treshold": treshold,
-            "right_data": right_data,
-            "left_data": left_data,
-            "info_gain": max_score,
-            "feature": feature + 1,
+            "right_data": np.array(right_data),
+            "left_data": np.array(left_data),
+            "feature": feature,
         }
 
     def info_gain(self, G, G1, G2):
-        return G - (G1 + G2) / 2
+        return G - ((G1 + G2) / 2)
 
     def Gini_Impurity(self, y1, y2):
         return 1 - (y1 / (y1 + y2)) ** 2 - (y2 / (y1 + y2)) ** 2
-
-    def entropy(self, Y):
-        count = Counter(Y)
-        return -count[1] * math.log2(count[1]) - count[0] * math.log2(count[0])
 
     def traverse_tree(self, patient) -> int:
         node = self.root
