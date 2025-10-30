@@ -15,5 +15,5 @@ We split the data recursively until we get only leafs or we reach maximum depth.
 Random Forest choses randomizes samples for each of its trees and then compares the evaluation of each tree to give a final prediction. Besides randomizing sample it also randomizes features. The best amount of features used by each tree, based on research, is square root of the original amount of features. By using each tree with randomized samples it minimizes possible bias of a single tree.
 
 ### Confusion Matrix
-We compare three methods of calculating distances (hamming, manhattan, euclidean) and visualize them using matplotlib.
+We count TP, TN, FP, FN by comparing models prediction and actual state of a patient, and then we calculate accuracy, precision, recall, F1 score.
 
