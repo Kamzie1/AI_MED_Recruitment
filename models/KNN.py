@@ -4,8 +4,10 @@ from collections.abc import Callable
 
 
 class KNN:
-    def __init__(self, points: npt.NDArray, k: int = 3) -> None:
+    def __init__(self, k: int = 3) -> None:
         self.k: int = 3
+
+    def fit(self, points: npt.NDArray):
         self.points: npt.NDArray = points
 
     @staticmethod
@@ -51,8 +53,7 @@ class KNN:
         self,
         new_point: npt.NDArray,
         calc_dist: Callable[[npt.NDArray, npt.NDArray], float] = euclidean,
-        p=None,
-    ) -> float:
+    ) -> int:
         """
         calculates distance between all the points from x_train and based on k-closest predicts wheter new_point is sick or not.
         """
@@ -66,4 +67,4 @@ class KNN:
         for i in range(self.k):
             suma += distances[i][0]
 
-        return suma / self.k
+        return np.round(suma / self.k)

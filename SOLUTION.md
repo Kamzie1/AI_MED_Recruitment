@@ -6,7 +6,13 @@ From task_data.csv we extract usefull data. I figured we dont need xx, yy, xy si
 Cardiomegaly happens when patient's heart is enlarged. Generally it is a symptom of a different condition, for example heart damage. We detect Cardiomegaly by performing a chest X-ray.
  
 ### KNN algorithm
-Using cross-validation we initialize knn class with training dataset. Then for each patient chosen for testing we perform KNN algorithm. Basically we calculate distances between given patient and training patients using one of the given methods: euclidean, manhattan, hamming. Then we take k closest patients and decide whether given patient is sick or not.
+Using cross-validation we initialize knn class with training dataset. Then for each patient chosen for testing we perform KNN algorithm. Basically we calculate distances between given patient and training patients using one of the given methods: euclidean, manhattan, hamming, chebyshev. Then we take k closest patients and decide whether given patient is sick or not.
+
+### Decision Tree
+We split the data recursively until we get only leafs or we reach maximum depth. Leafs are nodes with only one type of state(sick or healthy). We chose the best treshold and feature of split by calculating for each sample and feature gini impurity score and chosing the highest one.
+
+### Random Forest
+Random Forest choses randomizes samples for each of its trees and then compares the evaluation of each tree to give a final prediction. Besides randomizing sample it also randomizes features. The best amount of features used by each tree, based on research, is square root of the original amount of features. By using each tree with randomized samples it minimizes possible bias of a single tree.
 
 ### Confusion Matrix
 We compare three methods of calculating distances (hamming, manhattan, euclidean) and visualize them using matplotlib.

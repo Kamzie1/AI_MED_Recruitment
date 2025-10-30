@@ -1,6 +1,5 @@
 import numpy as np
-from collections import Counter
-import math
+import numpy.typing as npt
 
 
 class Node:
@@ -8,36 +7,57 @@ class Node:
         self,
         left=None,
         right=None,
-        treshold=None,
-        feature=None,
-        info_gain=None,
-        value=None,
+        treshold: float | None = None,
+        feature: int | None = None,
+        value: int | None = None,
     ) -> None:
+        """
+        class reprezenting a tree node
+
+        left: left subtree
+        right: right subtree
+        treshold: splitting value of a node
+        featutre: id of a feature we are comparing
+        value: only leafs have a value, 0 - means healthy, 1 - means sick
+        """
         self.left = left
         self.right = right
         self.treshold = treshold
         self.feature = feature
-        self.info_gain = info_gain
         self.value = value
 
 
 class DecisionTreeClassifier:
-    def __init__(self, max_depth=6, min_sample=1) -> None:
+    def __init__(self, max_depth: int = 10, min_sample: int = 1) -> None:
+        """
+        We initialize a Decision Tree with max_depth and min_sample, and create a root
+        max_depth : maximal depth a tree can reach
+        min_sample : minimal sample a node can have
+        """
         self.root = None
         self.max_depth = max_depth
-        self.min_sample = 1
+        self.min_sample = min_sample
 
-    def fit(self, data):
+    def fit(self, data: npt.NDArray) -> None:
+        """
+        fit the data to the model by crafting a tree with given data
+        """
         self.root = self.craftTree(data)
 
-    def is_leaf(self, Y):
+    def is_leaf(self, Y: list) -> bool:
+        """
+        checks wheter data consists of only one result(in that case it is a leaf)
+        """
         i = Y[0]
         for val in Y:
             if i != val:
                 return False
         return True
 
-    def craftTree(self, data, depth=0):
+    def craftTree(self, data: npt.NDArray, depth: int = 0) -> Node | None:
+        """
+        crafts a tree recursively by finding best split and spliting until we get only leafs or reach maximum depth, or sample is smaller than minimal sample
+        """
         Y = [point[0] for point in data]
         if depth > self.max_depth or self.min_sample > len(data) or self.is_leaf(Y):
             if len(data) == 0:
@@ -55,21 +75,23 @@ class DecisionTreeClassifier:
             best_value["feature"],
         )
 
-    def most_common_label(self, Y):
+    def most_common_label(self, Y: list) -> int:
+        """
+        choses most common number(between 1 and 0)
+        """
         return round(sum(Y) / len(Y))
 
-    def get_best_value(self, data) -> dict:
+    def get_best_value(self, data: npt.NDArray) -> dict:
+        """
+        choses the best treshold and feature to split the data using gini impurity
+        """
         samples, features = data.shape
         max_score = 0
-        max_treshold = (0, 1)
-        sick = 0
-        healthy = 0
-        for patient in data:
-            if patient[0] == 0:
-                healthy += 1
-            else:
-                sick += 1
-        Gini_before_split = self.Gini_Impurity(sick, healthy)
+        max_sample_feature = (0, 1)
+        sick, healthy = self.count_states(data)
+        Gini_before_split = self.Gini_Impurity(
+            sick, healthy
+        )  # calculating gini impurity before split
         for feature in range(1, features):
             for sample in range(samples):
                 treshold = data[sample][feature]
@@ -96,10 +118,12 @@ class DecisionTreeClassifier:
                     self.Gini_Impurity(right0, right1),
                 )
                 if score >= max_score:
+                    # chosing the best scoring split
                     max_score = score
-                    max_treshold = (sample, feature)
+                    max_sample_feature = (sample, feature)
 
-        sample, feature = max_treshold
+        # splitting the data with best split
+        sample, feature = max_sample_feature
         treshold = data[sample][feature]
         right_data = []
         left_data = []
@@ -116,25 +140,50 @@ class DecisionTreeClassifier:
             "feature": feature,
         }
 
-    def info_gain(self, G, G1, G2):
+    def count_states(self, data: npt.NDArray) -> tuple:
+        """
+        counts the amount of sick and healthy patients
+        """
+        healthy, sick = 0, 0
+        for patient in data:
+            if patient[0] == 0:
+                healthy += 1
+            else:
+                sick += 1
+        return healthy, sick
+
+    def info_gain(self, G: float, G1: float, G2: float) -> float:
+        """
+        calculates final score for a split
+        """
         return G - ((G1 + G2) / 2)
 
-    def Gini_Impurity(self, y1, y2):
+    def Gini_Impurity(self, y1: int, y2: int) -> float:
+        """
+        calculates gini impurity for a given split(only one side)
+        """
         return 1 - (y1 / (y1 + y2)) ** 2 - (y2 / (y1 + y2)) ** 2
 
-    def predict(self, patient):
+    def predict(self, patient: npt.NDArray) -> int:
+        """
+        returns prediction made by a model
+        """
         return self.traverse_tree(patient)
 
-    def traverse_tree(self, patient) -> int:
+    def traverse_tree(self, patient: npt.NDArray) -> int:
+        """
+        traverses the tree and upon encountering a leaf return a prediction
+        """
         node = self.root
         if node is None:
-            print("root is None!")
-            return 0
+            raise TypeError("root is None!")
 
         while node.value is None:
             if patient[node.feature] <= node.treshold:
                 node = node.left
             else:
                 node = node.right
+            if node is None:
+                raise TypeError("node is None!")
 
         return node.value

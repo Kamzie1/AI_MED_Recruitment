@@ -1,4 +1,4 @@
-from KNN import KNN
+from models.KNN import KNN
 import numpy as np
 
 
