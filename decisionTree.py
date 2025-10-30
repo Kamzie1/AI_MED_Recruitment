@@ -122,6 +122,9 @@ class DecisionTreeClassifier:
     def Gini_Impurity(self, y1, y2):
         return 1 - (y1 / (y1 + y2)) ** 2 - (y2 / (y1 + y2)) ** 2
 
+    def predict(self, patient):
+        return self.traverse_tree(patient)
+
     def traverse_tree(self, patient) -> int:
         node = self.root
         if node is None:
