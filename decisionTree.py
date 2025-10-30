@@ -22,7 +22,7 @@ class Node:
 
 
 class DecisionTreeClassifier:
-    def __init__(self, max_depth=2, min_sample=1) -> None:
+    def __init__(self, max_depth=6, min_sample=1) -> None:
         self.root = None
         self.max_depth = max_depth
         self.min_sample = 1
